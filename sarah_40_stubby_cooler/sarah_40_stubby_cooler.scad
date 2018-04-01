@@ -48,7 +48,7 @@ module SquareRing(square_width, start_position) {
 }
 
 module CoolerFrontMask(xy_advance) {
-    box_side = cooler_inner_diameter + cooler_thickness;
+    box_side = cooler_inner_diameter + (cooler_thickness * 2);
     box_height = cooler_height + cooler_base_thickness;
     translate([(box_side / xy_advance), -(box_side / xy_advance), (box_height / 2)]){
         rotate([0,0,45]) {
@@ -90,17 +90,18 @@ module Cooler() {
             }
             cylinder(h = cooler_base_thickness, r = (cooler_base_cutout_diameter / 2), $fn = cooler_resolution);
         }
-        Squares(cooler_square_v_gap);
         AllText();
+        Squares(cooler_square_v_gap);
+
     }      
 }
 
 module CoolerText(text_string, text_font, text_size, ew_position, z_position, text_color, text_thickness) {
     color(text_color) {
-        radius = ((cooler_inner_diameter / 2) + cooler_thickness - text_thickness);
+        radius = ((cooler_inner_diameter / 2) + cooler_thickness - (text_thickness / 4));
         difference() {
             text_on_cylinder(t=text_string, halign="left", r1 = radius, r2 = radius, h=z_position, font=text_font, direction="ttb", size=text_size, eastwest=ew_position, extrusion_height=text_thickness + 1);
-            CoolerSurfaceMask();
+            //CoolerSurfaceMask();
         }
     }
 }

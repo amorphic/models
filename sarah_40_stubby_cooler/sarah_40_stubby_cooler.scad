@@ -1,15 +1,15 @@
 use <text_on/text_on.scad>
 
 cooler_inner_diameter = 59;
-cooler_thickness = 6;
+cooler_thickness = 3;
 cooler_height = 100;
 cooler_base_thickness = 5;
 cooler_base_cutout_diameter = 45;
 cooler_square_width=14;
 cooler_square_v_gap=10;
 cooler_resolution = 120;
+cooler_text_thickness = 2.4;
 cooler_color = "purple";
-cooler_text_thickness = 2;
 
 name_text = "Sarah";
 name_font = "Sawasdee Regular";
@@ -57,17 +57,24 @@ module CoolerFrontMask(xy_advance) {
     }
 }
 
+module CoolerSurfaceMask() {
+    difference() {
+        cylinder(h = (cooler_height + cooler_base_thickness), r = ((cooler_inner_diameter / 2) + cooler_thickness + 10), $fn = cooler_resolution);
+        cylinder(h = (cooler_height + cooler_base_thickness), r = ((cooler_inner_diameter / 2) + cooler_thickness), $fn = cooler_resolution);
+    }
+}
+
 module Squares(gap) {
     // Bottom
     translate([0,0,((cooler_square_width / 2) + gap)]){ SquareRing(cooler_square_width, 22.5); };
     // Middle
     difference() {
         translate([0,0,((cooler_square_width / 2) + (gap * 2) + cooler_square_width)]){ SquareRing(cooler_square_width, 0); };
-        CoolerFrontMask(4);
+        CoolerFrontMask(4.2);
     }
     difference() {
         translate([0,0,((cooler_square_width / 2) + (gap * 3) + (cooler_square_width * 2))]){ SquareRing(cooler_square_width, 22.5); };
-        CoolerFrontMask(3);
+        CoolerFrontMask(2.6);
     }
     // Top
     translate([0,0,(cooler_height + cooler_base_thickness - (cooler_square_width / 2 + gap))]){ SquareRing(cooler_square_width, 0); };  
@@ -77,21 +84,24 @@ module Cooler() {
     color(cooler_color)
     difference() {
         difference() {
-            cylinder(h = (cooler_height + cooler_base_thickness), r = ((cooler_inner_diameter + cooler_thickness) / 2), $fn = cooler_resolution);
+            cylinder(h = (cooler_height + cooler_base_thickness), r = ((cooler_inner_diameter / 2) + cooler_thickness), $fn = cooler_resolution);
             translate([0, 0, cooler_base_thickness]) {
                 cylinder(h = cooler_height, r = (cooler_inner_diameter / 2), $fn = cooler_resolution);
             }
             cylinder(h = cooler_base_thickness, r = (cooler_base_cutout_diameter / 2), $fn = cooler_resolution);
         }
         Squares(cooler_square_v_gap);
-        All_Text();
+        AllText();
     }      
 }
 
 module CoolerText(text_string, text_font, text_size, ew_position, z_position, text_color, text_thickness) {
     color(text_color) {
-        radius = (((cooler_inner_diameter + cooler_thickness) / 2) - (text_thickness - 1));
-        text_on_cylinder(t=text_string, halign="left", r1 = radius, r2 = radius, h=z_position, font=text_font, direction="ttb", size=text_size, eastwest=ew_position, extrusion_height=text_thickness);
+        radius = ((cooler_inner_diameter / 2) + cooler_thickness - text_thickness);
+        difference() {
+            text_on_cylinder(t=text_string, halign="left", r1 = radius, r2 = radius, h=z_position, font=text_font, direction="ttb", size=text_size, eastwest=ew_position, extrusion_height=text_thickness + 1);
+            CoolerSurfaceMask();
+        }
     }
 }
 
@@ -119,7 +129,7 @@ module AllText() {
 }
 
 Cooler();
-NameText();
-NumberText();
-IDText();
-CactiText();
+//NameText();
+//NumberText();
+//IDText();
+//CactiText();

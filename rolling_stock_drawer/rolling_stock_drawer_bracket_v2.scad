@@ -4,9 +4,9 @@ bracket_width = 48.5;
 bracket_height = 3;
 slot_width = 8;
 slot_height = 12;
-notch_width = 3;
+notch_width = 3.1;
 notch_height = 5;
-cutout_count = 5;
+cutout_count = 6;
 cutout_radius = 5;
 
 cutout_length = (bracket_length - (slot_width * cutout_count)) / cutout_count;

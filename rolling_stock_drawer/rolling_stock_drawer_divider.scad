@@ -1,8 +1,10 @@
-bracket_length = 353;
-bracket_height = 44;
+divider_length = 353;
+divider_height = 44;
 gap_length = 240;
 gap_height = 20;
-side_length = (bracket_length - gap_length) / 2;
+tab_length = 6;
+tab_height = 32;
+side_length = (divider_length - gap_length) / 2;
 $fn=50;
 curve_radius = 16;
 
@@ -31,18 +33,27 @@ projection() {
     difference() {
         union() {
             // left side
-            side(side_length, bracket_height, curve_radius);
+            side(side_length, divider_height, curve_radius);
             // right side
-            translate([bracket_length,0,0]){
+            translate([divider_length,0,0]){
                 mirror([1,0,0]) {
-                    side(side_length, bracket_height, curve_radius);
+                    side(side_length, divider_height, curve_radius);
                 }
             }
             // middle
-            cube([bracket_length, bracket_height-gap_height+(curve_radius/4),1]);
+            cube([divider_length, divider_height-gap_height+(curve_radius/4),1]);
+            // tabs
+            translate([divider_length, (divider_height - tab_height) / 2,0]){
+                cube([tab_length, tab_height, 1]);
+            }
+            translate([0, (divider_height - tab_height) / 2,0]){
+                mirror([1,0,0]) {
+                    cube([tab_length, tab_height, 1]);
+                }
+            }
         }
-        translate([(bracket_length - gap_length) / 2,bracket_height - gap_height - (curve_radius/4),0]){
-            cutout(gap_length, bracket_height - gap_height + curve_radius, curve_radius);
+        translate([(divider_length - gap_length) / 2,divider_height - gap_height - (curve_radius/4),0]){
+            cutout(gap_length, divider_height - gap_height + curve_radius, curve_radius);
         }
     }
 }

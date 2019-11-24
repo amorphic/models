@@ -1,5 +1,5 @@
-divider_length = 353;
-divider_height = 44;
+divider_length = 361;
+divider_height = 48;
 gap_length = 240;
 gap_height = 20;
 tab_length = 6;

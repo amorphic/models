@@ -1,5 +1,6 @@
 rail_width = 50;
 rail_height = 20;
+rail_length = 120;
 rail_tolerance = 0.5;
 wall_thickness = 3;
 box_length = 60;
@@ -9,6 +10,7 @@ screw_hole_diameter = 4;
 screw_hole_offset = 12;
 cable_hole_diameter = 4;
 cable_hole_offset = 4;
+lid_tolerance = 0.2;
 
 module box_outer(){
     cube([
@@ -82,15 +84,47 @@ module screw_holes(){
     }
 }
 
-module main(){
-    difference(){
-        box_outer();
-        box_inner_cutout();
-        rail_cutout();
-        button_hole_cutout();
-        screw_holes();
-        cable_hole();
+module lid(){
+    union() {
+        cube([
+            box_length,
+            rail_width + wall_thickness * 2 + rail_tolerance * 2,
+            wall_thickness
+    ]);
+        translate([wall_thickness, wall_thickness + rail_tolerance, wall_thickness]){
+            cube([
+                box_length - wall_thickness * 2,
+                rail_width,
+                wall_thickness
+            ]);
+        }
     }
 }
 
+module rail(){
+    color("white"){
+        cube([
+            rail_length,
+            rail_width,
+            rail_height,
+        ]);
+    }
+}
+
+module main(){
+    translate([10, -wall_thickness-rail_tolerance, 0]){
+        difference(){
+            box_outer();
+            box_inner_cutout();
+            rail_cutout();
+            button_hole_cutout();
+            screw_holes();
+            cable_hole();
+        }
+    }
+    rail();
+}
+
+
+//lid();
 main();

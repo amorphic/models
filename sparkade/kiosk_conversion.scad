@@ -30,6 +30,8 @@ controller_top_depth = controller_depth + controller_top_overhang;
 controller_bottom_recess = controller_corner_radius / 2;
 controller_bolt_hole_diameter = 6.5;
 controller_bolt_hole_offset = 20;
+controller_player_button_offset = 18;
+controller_coin_button_offset = 36;
 
 // joystick
 joystick_plate_width = 64.9;
@@ -46,6 +48,9 @@ joystick_screw_hole_offset_y = 7.5;
 
 // faceplate
 faceplate_material_depth = 3;
+
+// cutout
+cutout_space = 10;
 
 module kiosk_base() {
     cube([kiosk_base_width, kiosk_base_depth, kiosk_base_height]);
@@ -124,10 +129,21 @@ module controller_back(){
 }
 
 module controller_front(){
+    panel_width = kiosk_body_width - controller_material_thickness * 2;
     difference(){
-        cube([kiosk_body_width - controller_material_thickness * 2, controller_material_thickness, controller_height_front]);
-        // button holes
-        
+        cube([panel_width, controller_material_thickness, controller_height_front]);
+        // p1
+        translate([panel_width / 2 - controller_player_button_offset, controller_material_thickness, controller_height_front / 2])
+            rotate([90, 0, 0])
+                joystick_button_hole();
+        // p2
+        translate([panel_width / 2 + controller_player_button_offset, controller_material_thickness, controller_height_front / 2])
+            rotate([90, 0, 0])
+                joystick_button_hole();
+        // coin
+        translate([panel_width - controller_coin_button_offset, controller_material_thickness, controller_height_front / 2])
+            rotate([90, 0, 0])
+                joystick_button_hole();        
     }
 }
 
@@ -171,13 +187,33 @@ module joystick_plate_recess(){
         }
 }
 
+module joystick_body_recess(){
+    translate([joystick_plate_corner_radius, joystick_plate_corner_radius, 0])
+        linear_extrude(controller_material_thickness){
+            hull(){
+                circle(r=joystick_plate_corner_radius, $fn=180);
+                translate([joystick_plate_width - joystick_plate_corner_radius * 2, 0, 0])
+                    circle(r=joystick_plate_corner_radius, $fn=180);
+                translate([joystick_plate_width - joystick_plate_corner_radius * 2, joystick_plate_width - joystick_plate_corner_radius * 2, 0])
+                    circle(r=joystick_plate_corner_radius, $fn=180);
+                translate([0, joystick_plate_width - joystick_plate_corner_radius * 2, 0])
+                    circle(r=joystick_plate_corner_radius, $fn=180);
+            }
+        }
+}
+
 module controller_joystick_cutout(){
     // joystick plate recess
     translate([0, 0, controller_material_thickness])
         joystick_plate_recess();
+    /*
     // joystick hole
     translate([joystick_plate_width / 2, joystick_plate_length / 2, 0])
         cylinder(d=joystick_hole_diameter, h=controller_material_thickness, $fn=180);
+    */
+    // joystick_body_recess
+    translate([0, joystick_plate_length / 2 - joystick_plate_width / 2, 0])
+        joystick_body_recess();
     // joystick screw holes
     translate([joystick_screw_hole_offset_x, joystick_screw_hole_offset_y, 0])
         joystick_screw_hole();
@@ -239,18 +275,37 @@ module controller_assembly(){
                 controller_top();
 }    
 
-/*
-kiosk();
-translate([(kiosk_base_width - kiosk_body_width) / 2,kiosk_body_offset,800]){
-    controller_assembly();
+module kiosk_conversion(){
+    kiosk();
+    translate([(kiosk_base_width - kiosk_body_width) / 2,kiosk_body_offset,800]){
+        controller_assembly();
+    }
 }
-*/
+
+module cutout(){
+    //side_height = controller_height_back + controller_bottom_recess + controller_depth * tan(controller_pitch_bottom_degrees)
+    side_height = 210;
+    controller_side();
+    translate([kiosk_body_width - controller_material_thickness * 2, 0, 0])
+        mirror([1, 0, 0]) controller_side();
+    translate([0, side_height + cutout_space, 0])
+        controller_base();
+    translate([0, side_height + cutout_space * 3 + controller_height_back * 2, 0])
+        rotate([90, 0, 0])
+            controller_back();
+    translate([0, side_height + cutout_space * 4 + controller_height_back * 2 + controller_height_front, 0])
+        rotate([90, 0, 0])
+            controller_front();
+    translate([0, side_height + cutout_space * 2 + controller_height_back + controller_height_front + controller_depth, 0])
+            controller_top();
+}
 
 //controller_side();
 //controller_base();
 //controller_back();
 //controller_front();
 //controller_top();
-//controller_joystick_cutout();
-//controller_1p_cutout();
-controller_assembly();
+
+//kiosk_conversion();
+//controller_assembly();
+cutout();

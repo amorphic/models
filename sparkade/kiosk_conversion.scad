@@ -1,3 +1,9 @@
+/* 3d-printed parts:
+
+- joystick controller mount: https://www.thingiverse.com/thing:3700981/files
+- pi3 / tinkerboard mount: https://www.thingiverse.com/thing:922740/files
+*/
+
 // kiosk
 kiosk_base_width = 570;
 kiosk_base_depth = 570;
@@ -50,7 +56,7 @@ joystick_screw_hole_offset_y = 7.5;
 faceplate_material_depth = 3;
 
 // cutout
-cutout_space = 10;
+cutout_space = 20;
 
 module kiosk_base() {
     cube([kiosk_base_width, kiosk_base_depth, kiosk_base_height]);
@@ -250,6 +256,8 @@ module controller_1p_cutout(){
 
 module controller_assembly(){
     base_offset = controller_depth * tan(controller_pitch_bottom_degrees) + controller_bottom_recess;
+    echo(base_offset);
+   
     top_z_adjust = 0.6;
     top_y_adjust = 4;
     translate([controller_material_thickness, 0, 0])
@@ -296,7 +304,7 @@ module cutout(){
     translate([0, side_height + cutout_space * 4 + controller_height_back * 2 + controller_height_front, 0])
         rotate([90, 0, 0])
             controller_front();
-    translate([0, side_height + cutout_space * 2 + controller_height_back + controller_height_front + controller_depth, 0])
+    translate([0, side_height + cutout_space * 4 + controller_height_back + controller_height_front + controller_depth, 0])
             controller_top();
 }
 
